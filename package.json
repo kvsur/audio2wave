@@ -1,0 +1,23 @@
+{
+  "name": "audio2wave",
+  "version": "1.0.0",
+  "description": "draw wave in canvas from audio element source",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kvsur/audio2wave.git"
+  },
+  "keywords": [
+    "AudioContext",
+    "Canvas"
+  ],
+  "author": "kvsur",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kvsur/audio2wave/issues"
+  },
+  "homepage": "https://github.com/kvsur/audio2wave#readme"
+}
