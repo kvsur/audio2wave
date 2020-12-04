@@ -1,14 +1,14 @@
 {
     "compilerOptions": {
         "target": "ES5",
-        "module": "CommonJS",
+        "module": "ES6",
         "noImplicitAny": true,
-        "removeComments": false,
+        // "removeComments": false,
         "preserveConstEnums": true,
         "sourceMap": true,
         "outDir": "./lib",
         "lib": ["DOM", "ES2015", "ES2016", "ES2017.Object", "ES2018.Promise"],
-        "declaration": true
+        // "declaration": true
     },
     "include": [
         "src/**/*"

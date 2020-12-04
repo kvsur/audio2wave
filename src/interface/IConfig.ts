@@ -14,6 +14,7 @@ export interface IDrawerConfig {
     color?: string;
     barWidth?: number;
     align?: ALIGN;
+    xSpace?: number;
 }
 
 export interface IConfig {

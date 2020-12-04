@@ -2,18 +2,22 @@ import { IDataConfig } from './interface/IConfig';
 import { IEvent, IEvents } from './interface/IDataProcesser';
 import { IDataProcesser } from './interface/IDataProcesser';
 import { IAudio } from './interface/IElement';
-import { Emitor } from './utils/Emitor';
+import { Emitor } from './utils/Emitor/index';
 
 const DEFAULT_CONFIG: IDataConfig = {
     fftSize: 512,
 };
 
 export class DataProcesser implements IDataProcesser {
-    private audio: IAudio = null;
-    private config: IDataConfig = null;
-    private emitor: Emitor = null;
-    private audioContext: AudioContext = null;
+    private audio: IAudio;
+    private config: IDataConfig;
+    private emitor: Emitor;
+    private audioContext: AudioContext;
     private state: AudioContextState = 'suspended';
+    private analyser: AnalyserNode;
+    private audioSource: MediaElementAudioSourceNode;
+
+    public byteFrequencyData: Uint8Array;
 
     constructor(audio: IAudio, config: IDataConfig = DEFAULT_CONFIG) {
         this.audio = audio;
@@ -30,7 +34,6 @@ export class DataProcesser implements IDataProcesser {
             this.emitor.emit('statchange', new IEvent<AudioContextState>('statechange', this.state));
         };
 
-
     }
 
     private createAudioContext(): AudioContext {
@@ -43,21 +46,48 @@ export class DataProcesser implements IDataProcesser {
         }
     }
 
-    start(): void {
-        throw new Error('Method not implemented.');
-    }
-    stop(): void {
-        throw new Error('Method not implemented.');
+    getByteFrequenceData(): void {
+        this.analyser.getByteFrequencyData(this.byteFrequencyData);
     }
 
-    destory(): void {
-        this.audioContext.close();
-        this.audioContext = null;
-        this.emitor.emit('destroy', new IEvent<null>('destroy', null));
+    start(): Promise<void> {
+        this.analyser = this.audioContext.createAnalyser();
+        this.analyser.fftSize = this.config.fftSize || 512;
+        const bufferLength = this.analyser.frequencyBinCount;
+        this.byteFrequencyData = new Uint8Array(bufferLength);
+        this.audioSource = this.audioContext.createMediaElementSource(this.audio);
+
+        this.audioSource.connect(this.analyser);
+        this.analyser.connect(this.audioContext.destination);
+        return this.audioContext.resume();
     }
+
+    stop(): Promise<void> {
+        this.analyser.disconnect();
+        this.audioSource.disconnect();
+        this.audioContext.suspend().catch(e => {
+            this.emitor.emit('error', new IEvent<Error>('error', e))
+        }).finally(() => {
+            this.analyser = null;
+            this.audioSource = null;
+        });
+        return Promise.resolve();
+    }
+
+    destroy(): Promise<void> {
+        this.stop().finally(() => {
+            this.audioContext.close();
+            this.audioContext = null;
+            this.emitor.emit('destroy', new IEvent<null>('destroy', null));
+        });
+
+        return Promise.resolve();
+    }
+
     addEventListener<K extends keyof IEvents>(eventName: K, listener: (event: IEvents[K]) => void): void {
         this.emitor.addListener(eventName, listener);
     }
+
     removeEventListener<K extends keyof IEvents>(eventName: K, listener: (event: IEvents[K]) => void): void {
         this.emitor.removeListener(eventName, listener);
     }

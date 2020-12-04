@@ -1,3 +1,5 @@
+import { IBase } from "./IBase";
+
 export interface IEvents {
     "destroy": IEvent<null>;
     "statechange": IEvent<AudioContextState>;
@@ -14,11 +16,9 @@ export class IEvent<Data> {
     data: Data;
 }
 
-export interface IDataProcesser {
-    start(): void;
-    stop(): void;
-    destory(): void;
-
+export interface IDataProcesser extends IBase {
+    byteFrequencyData: Uint8Array;
     addEventListener<K extends keyof IEvents>(eventName: K, listener: (event: IEvents[K])=> void): void;
     removeEventListener<K extends keyof IEvents>(eventName: K, listener: (event: IEvents[K])=> void): void;
+    getByteFrequenceData(): void;
 }
