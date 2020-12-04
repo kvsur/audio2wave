@@ -4,8 +4,8 @@
   "description": "draw wave in canvas from audio element source",
   "main": "lib/index.js",
   "scripts": {
-    "build": "tsc && webpack",
-    "start": "npm run build && webpack-dev-server"
+    "build": "tsc",
+    "start": "npm run build && nodemon demo/server.js"
   },
   "repository": {
     "type": "git",
@@ -22,6 +22,8 @@
   },
   "homepage": "https://github.com/kvsur/audio2wave#readme",
   "devDependencies": {
+    "express": "^4.17.1",
+    "nodemon": "^2.0.6",
     "typescript": "^4.1.2",
     "webpack": "^4.44.2",
     "webpack-cli": "^4.2.0"
