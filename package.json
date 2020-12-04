@@ -4,7 +4,8 @@
   "description": "draw wave in canvas from audio element source",
   "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc && webpack",
+    "start": "npm run build && webpack-dev-server"
   },
   "repository": {
     "type": "git",
@@ -19,5 +20,10 @@
   "bugs": {
     "url": "https://github.com/kvsur/audio2wave/issues"
   },
-  "homepage": "https://github.com/kvsur/audio2wave#readme"
+  "homepage": "https://github.com/kvsur/audio2wave#readme",
+  "devDependencies": {
+    "typescript": "^4.1.2",
+    "webpack": "^4.44.2",
+    "webpack-cli": "^4.2.0"
+  }
 }
