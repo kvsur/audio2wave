@@ -10,11 +10,17 @@ export enum ALIGN {
     RIGHT,
 }
 
+export interface CanvasWH {
+    width: number;
+    height: number;
+}
+
 export interface IDrawerConfig {
     color?: string;
     barWidth?: number;
     align?: ALIGN;
     xSpace?: number;
+    canvasWH?: CanvasWH;
 }
 
 export interface IConfig {

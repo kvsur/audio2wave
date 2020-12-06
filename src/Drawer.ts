@@ -57,10 +57,15 @@ export class Drawer implements IDrawer {
     }
 
     private setCanvasSize():void {
-        const styleInfo = getComputedStyle(this.container);
+        if (this.config.canvasWH) {
+            this.height = this.canvas.height = this.config.canvasWH.height;
+            this.width = this.canvas.width = this.config.canvasWH.width;
+        } else {
+            const styleInfo = getComputedStyle(this.container);
 
-        this.height = this.canvas.height = parseFloat(styleInfo.height);
-        this.width = this.canvas.width = parseFloat(styleInfo.width);
+            this.height = this.canvas.height = parseFloat(styleInfo.height);
+            this.width = this.canvas.width = parseFloat(styleInfo.width);
+        }
         this.heightScale = (this.height / 2) / ((this.fftSize / 2) - 1);
     }
 
