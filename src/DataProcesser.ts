@@ -51,11 +51,15 @@ export class DataProcesser implements IDataProcesser {
     }
 
     start(): Promise<void> {
-        this.analyser = this.audioContext.createAnalyser();
-        this.analyser.fftSize = this.config.fftSize || 512;
-        const bufferLength = this.analyser.frequencyBinCount;
-        this.byteFrequencyData = new Uint8Array(bufferLength);
-        this.audioSource = this.audioContext.createMediaElementSource(this.audio);
+        if (!this.analyser) {
+            this.analyser = this.audioContext.createAnalyser();
+            this.analyser.fftSize = this.config.fftSize || 512;
+        }
+        if (!this.audioSource) {
+            const bufferLength = this.analyser.frequencyBinCount;
+            this.byteFrequencyData = new Uint8Array(bufferLength);
+            this.audioSource = this.audioContext.createMediaElementSource(this.audio);
+        }
 
         this.audioSource.connect(this.analyser);
         this.analyser.connect(this.audioContext.destination);
@@ -68,8 +72,8 @@ export class DataProcesser implements IDataProcesser {
         this.audioContext.suspend().catch(e => {
             this.emitor.emit('error', new IEvent<Error>('error', e))
         }).finally(() => {
-            this.analyser = null;
-            this.audioSource = null;
+            // this.analyser = null;
+            // this.audioSource = null;
         });
         return Promise.resolve();
     }

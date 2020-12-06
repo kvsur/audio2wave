@@ -7,9 +7,15 @@ const container = document.getElementById('container')
 const audio2wave = new Audio2Wave({
     audio,
     container,
+    drawerConfig: {
+        color: '#007fff'
+    },
+    dataConfig: {
+        fftSize: 512
+    }
 });
 
-audio.onplaying = () => {
+audio.onplay = () => {
     audio2wave.start();
 }
 

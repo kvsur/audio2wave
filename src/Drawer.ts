@@ -3,7 +3,7 @@ import { IDrawer } from './interface/IDrawer';
 import { IContainer } from './interface/IElement';
 
 const DEFAULT_CONFIG: IDrawerConfig = {
-    color: 'rgb(61 126 154)',
+    color: '',
     barWidth: 2,
     align: ALIGN.LEFT,
     xSpace: 2
@@ -20,6 +20,7 @@ export class Drawer implements IDrawer {
     private drawing = false;
     private heightScale = 0;
     private fftSize: number;
+    private animationFrameId: number;
 
     constructor(container: IContainer, fftSize: number, config?: IDrawerConfig) {
         this.config = <IDrawerConfig>({
@@ -40,7 +41,7 @@ export class Drawer implements IDrawer {
         this.beforeDraw();
         // TODO draw work
         this.draw();
-        requestAnimationFrame(this.run);
+        this.animationFrameId = requestAnimationFrame(this.run);
     }
 
     beforeDraw: () => {}
@@ -73,6 +74,7 @@ export class Drawer implements IDrawer {
 
     stop(): void {
         if (this.drawing) {
+            cancelAnimationFrame(this.animationFrameId);
             this.run = () => {};
             this.drawing = false;
         }
@@ -80,18 +82,28 @@ export class Drawer implements IDrawer {
 
     private draw(): void {
         this.context.clearRect(0, -(this.height / 2), this.width, this.height);
-        this.context.fillStyle = this.config.color;
-        this.context.fillRect(0,0,this.width,this.config.barWidth);
+        if (this.config.color) {
+            this.context.fillStyle = this.config.color;
+        } else {
+            this.context.fillStyle = `rgb(${85} 8 156)`;
+        }
+        this.context.fillRect(0,0,this.width,1);
 
         const length = this.waveData.length;
 
-        for(let index = 0, x = 0; index < length; index++) {
+        for(let index = 0, x = 4; index < length; index++) {
             const byteFrequenceData = this.waveData[index];
 
             const Y = byteFrequenceData * this.heightScale;
             const negativeY = -Y;
 
-            this.context.fillStyle = this.config.color;
+            // this.context.fillStyle = this.config.color;
+            if (this.config.color) {
+                this.context.fillStyle = this.config.color;
+            } else {
+                this.context.fillStyle = `rgb(${index} 8 156)`;
+                // this.context.fillStyle = `rgb(${85} 8 156)`;
+            }
             this.context.fillRect(x, negativeY, this.config.barWidth, 2*Y);
 
             x += this.config.barWidth + this.config.xSpace;
