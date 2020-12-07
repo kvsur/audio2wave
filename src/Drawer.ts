@@ -21,6 +21,7 @@ export class Drawer implements IDrawer {
     private heightScale = 0;
     private fftSize: number;
     private animationFrameId: number;
+    private proxySetSize: () => void;
 
     constructor(container: IContainer, fftSize: number, config?: IDrawerConfig) {
         this.config = <IDrawerConfig>({
@@ -53,7 +54,10 @@ export class Drawer implements IDrawer {
         this.container.appendChild(this.canvas);
         // 将canvas画布原点移动到整个画布y轴中间
         this.context.translate(0, this.height / 2);
-        window.addEventListener('resize', this.setCanvasSize);
+        this.proxySetSize = () => {
+            this.setCanvasSize();
+        };
+        window.addEventListener('resize', this.proxySetSize);
     }
 
     private setCanvasSize():void {
@@ -119,7 +123,8 @@ export class Drawer implements IDrawer {
         this.container.removeChild(this.canvas);
         this.canvas = null;
         this.context = null;
-        window.removeEventListener('resize', this.setCanvasSize);
+        window.removeEventListener('resize', this.proxySetSize);
+        this.proxySetSize = () => {};
         return Promise.resolve();
     }
 }
