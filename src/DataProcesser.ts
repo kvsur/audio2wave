@@ -1,7 +1,7 @@
 import { IDataConfig } from './interface/IConfig';
 import { IEvent, IEvents } from './interface/IDataProcesser';
 import { IDataProcesser } from './interface/IDataProcesser';
-import { IAudio } from './interface/IElement';
+import { IAudio, IStream } from './interface/IElement';
 import { Emitor } from './utils/Emitor/index';
 
 const DEFAULT_CONFIG: IDataConfig = {
@@ -9,17 +9,17 @@ const DEFAULT_CONFIG: IDataConfig = {
 };
 
 export class DataProcesser implements IDataProcesser {
-    private audio: IAudio;
+    private audio: IAudio | IStream;
     private config: IDataConfig;
     private emitor: Emitor;
     private audioContext: AudioContext;
     private state: AudioContextState = 'suspended';
     private analyser: AnalyserNode;
-    private audioSource: MediaElementAudioSourceNode;
+    private audioSourceNode: MediaElementAudioSourceNode | MediaStreamAudioSourceNode;
 
     public byteFrequencyData: Uint8Array;
 
-    constructor(audio: IAudio, config: IDataConfig = DEFAULT_CONFIG) {
+    constructor(audio: IAudio | IStream, config: IDataConfig = DEFAULT_CONFIG) {
         this.audio = audio;
         this.config = config;
 
@@ -33,7 +33,7 @@ export class DataProcesser implements IDataProcesser {
             this.state = <AudioContextState>(<any>event.target).state;
             this.emitor.emit('statchange', new IEvent<AudioContextState>('statechange', this.state));
         };
-
+        // this.audioContext.onstatechange
     }
 
     private createAudioContext(): AudioContext {
@@ -46,6 +46,13 @@ export class DataProcesser implements IDataProcesser {
         }
     }
 
+    private createAudioSource(elementOrStream: IAudio | IStream) {
+        if (elementOrStream instanceof HTMLMediaElement) {
+            return this.audioContext.createMediaElementSource(<IAudio>elementOrStream);
+        }
+        return this.audioContext.createMediaStreamSource(<IStream>elementOrStream);
+    }
+
     getByteFrequenceData(): void {
         this.analyser.getByteFrequencyData(this.byteFrequencyData);
     }
@@ -55,25 +62,25 @@ export class DataProcesser implements IDataProcesser {
             this.analyser = this.audioContext.createAnalyser();
             this.analyser.fftSize = this.config.fftSize || 512;
         }
-        if (!this.audioSource) {
+        if (!this.audioSourceNode) {
             const bufferLength = this.analyser.frequencyBinCount;
-            this.byteFrequencyData = new Uint8Array(bufferLength);
-            this.audioSource = this.audioContext.createMediaElementSource(this.audio);
+        this.byteFrequencyData = new Uint8Array(bufferLength);
+        this.audioSourceNode = this.createAudioSource(this.audio);
         }
 
-        this.audioSource.connect(this.analyser);
+        this.audioSourceNode.connect(this.analyser);
         this.analyser.connect(this.audioContext.destination);
         return this.audioContext.resume();
     }
 
     stop(): Promise<void> {
         this.analyser.disconnect();
-        this.audioSource.disconnect();
+        this.audioSourceNode.disconnect();
         this.audioContext.suspend().catch(e => {
             this.emitor.emit('error', new IEvent<Error>('error', e))
         }).finally(() => {
             // this.analyser = null;
-            // this.audioSource = null;
+            // this.audioSourceNode = null;
         });
         return Promise.resolve();
     }

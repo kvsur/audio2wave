@@ -1,4 +1,4 @@
-import { IAudio, IContainer } from './IElement';
+import { IAudio, IContainer, IStream } from './IElement';
 
 export interface IDataConfig {
     fftSize?: 128|256|512|1024;
@@ -24,7 +24,7 @@ export interface IDrawerConfig {
 }
 
 export interface IConfig {
-    audio: IAudio;
+    audio: IAudio | IStream;
     container: IContainer;
     dataConfig?: IDataConfig;
     drawerConfig?: IDrawerConfig;
