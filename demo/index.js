@@ -15,13 +15,13 @@ const audio2wave = new Audio2Wave({
     }
 });
 
-audio.onplay = () => {
-    audio2wave.start();
-}
+// audio.onplay = () => {
+//     audio2wave.start();
+// }
 
-audio.onpause = () => {
-    audio2wave.stop();
-}
+// audio.onpause = () => {
+//     audio2wave.stop();
+// }
 
 window.onunload = () => {
     audio2wave.destroy();
