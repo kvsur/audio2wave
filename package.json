@@ -12,8 +12,12 @@
     "url": "git+https://github.com/kvsur/audio2wave.git"
   },
   "keywords": [
+    "Web Audio",
     "AudioContext",
-    "Canvas"
+    "Canvas",
+    "MediaStream",
+    "createMediaElementSource",
+    "createMediaStreamSource"
   ],
   "author": "kvsur",
   "license": "MIT",
