@@ -120,6 +120,7 @@ export class Drawer implements IDrawer {
     }
 
     destroy(): Promise<void> {
+        cancelAnimationFrame(this.animationFrameId);
         this.container.removeChild(this.canvas);
         this.canvas = null;
         this.context = null;
