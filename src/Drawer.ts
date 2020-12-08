@@ -71,6 +71,9 @@ export class Drawer implements IDrawer {
             this.width = this.canvas.width = parseFloat(styleInfo.width);
         }
         this.heightScale = (this.height / 2) / ((this.fftSize / 2) - 1);
+
+        // 将canvas画布原点移动到整个画布y轴中间
+        this.context.translate(0, this.height / 2);
     }
 
     start(): void {
