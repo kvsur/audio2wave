@@ -5,7 +5,8 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc && webpack",
-    "start": "npm run build && nodemon demo/server.js"
+    "start": "npm run build && nodemon demo/server.js",
+    "release": "tsc && npm publish"
   },
   "repository": {
     "type": "git",
