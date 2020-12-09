@@ -1,8 +1,9 @@
 import { IDrawerConfig, ALIGN } from './interface/IConfig';
 import { IDrawer } from './interface/IDrawer';
 import { IContainer } from './interface/IElement';
+import { IPartial } from './interface/base';
 
-const DEFAULT_CONFIG: IDrawerConfig = {
+const DEFAULT_CONFIG: Partial<IDrawerConfig> = {
     color: '',
     barWidth: 2,
     align: ALIGN.LEFT,
@@ -11,7 +12,7 @@ const DEFAULT_CONFIG: IDrawerConfig = {
 
 
 export class Drawer implements IDrawer {
-    private config: IDrawerConfig;
+    private config: IPartial<IDrawerConfig>;
     private container: IContainer;
     private canvas: HTMLCanvasElement;
     private context: CanvasRenderingContext2D;
@@ -23,8 +24,8 @@ export class Drawer implements IDrawer {
     private animationFrameId: number;
     private proxySetSize: () => void;
 
-    constructor(container: IContainer, fftSize: number, config?: IDrawerConfig) {
-        this.config = <IDrawerConfig>({
+    constructor(container: IContainer, fftSize: number, config?: IPartial<IDrawerConfig>) {
+        this.config = <IPartial<IDrawerConfig>>({
             ...DEFAULT_CONFIG,
             ...config
         });
@@ -61,6 +62,7 @@ export class Drawer implements IDrawer {
     }
 
     private setCanvasSize():void {
+        // this.context.translate(0, this.height / 2);
         if (this.config.canvasWH) {
             this.height = this.canvas.height = this.config.canvasWH.height;
             this.width = this.canvas.width = this.config.canvasWH.width;
@@ -73,23 +75,28 @@ export class Drawer implements IDrawer {
         this.heightScale = (this.height / 2) / ((this.fftSize / 2) - 1);
 
         // 将canvas画布原点移动到整个画布y轴中间
-        this.context.translate(0, this.height / 2);
     }
 
-    start(): void {
+    start(): Promise<any> {
         if (!this.drawing) {
             this.run = this.innerRun;
             this.run();
             this.drawing = true;
+            return Promise.resolve();
         }
+
+        return Promise.reject('Drawer still drawing');
     }
 
-    stop(): void {
+    stop(): Promise<any> {
         if (this.drawing) {
             cancelAnimationFrame(this.animationFrameId);
             this.run = () => {};
             this.drawing = false;
+            return Promise.resolve();
         }
+
+        return Promise.reject('Drawer was stoped');
     }
 
     private draw(): void {
@@ -122,7 +129,7 @@ export class Drawer implements IDrawer {
         }
     }
 
-    destroy(): Promise<void> {
+    destroy(): Promise<any> {
         cancelAnimationFrame(this.animationFrameId);
         this.container.removeChild(this.canvas);
         this.canvas = null;

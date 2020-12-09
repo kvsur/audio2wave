@@ -2,6 +2,7 @@ import { IDataConfig } from './interface/IConfig';
 import { IEvent, IEvents } from './interface/IDataProcesser';
 import { IDataProcesser } from './interface/IDataProcesser';
 import { IAudio, IStream } from './interface/IElement';
+import { IPartial } from './interface/base';
 import { Emitor } from './utils/Emitor/index';
 
 const DEFAULT_CONFIG: IDataConfig = {
@@ -10,7 +11,7 @@ const DEFAULT_CONFIG: IDataConfig = {
 
 export class DataProcesser implements IDataProcesser {
     private audio: IAudio | IStream;
-    private config: IDataConfig;
+    private config: IPartial<IDataConfig>;
     private emitor: Emitor;
     private audioContext: AudioContext;
     private state: AudioContextState = 'suspended';
@@ -19,7 +20,9 @@ export class DataProcesser implements IDataProcesser {
 
     public byteFrequencyData: Uint8Array;
 
-    constructor(audio: IAudio | IStream, config: IDataConfig = DEFAULT_CONFIG) {
+    private running = false;
+
+    constructor(audio: IAudio | IStream, config: IPartial<IDataConfig> = DEFAULT_CONFIG) {
         this.audio = audio;
         this.config = config;
 
@@ -57,7 +60,9 @@ export class DataProcesser implements IDataProcesser {
         this.analyser.getByteFrequencyData(this.byteFrequencyData);
     }
 
-    start(): Promise<void> {
+    start(): Promise<any> {
+        if (this.running) return Promise.reject('Processor still running');
+        this.running = true;
         if (!this.analyser) {
             this.analyser = this.audioContext.createAnalyser();
             this.analyser.fftSize = this.config.fftSize || 512;
@@ -73,7 +78,9 @@ export class DataProcesser implements IDataProcesser {
         return this.audioContext.resume();
     }
 
-    stop(): Promise<void> {
+    stop(): Promise<any> {
+        if (!this.running) return Promise.reject('Processor was stoped');
+        this.running = false;
         this.analyser.disconnect();
         this.audioSourceNode.disconnect();
         this.audioContext.suspend().catch(e => {
@@ -85,7 +92,7 @@ export class DataProcesser implements IDataProcesser {
         return Promise.resolve();
     }
 
-    destroy(): Promise<void> {
+    destroy(): Promise<any> {
         this.stop().finally(() => {
             this.audioContext.close();
             this.audioContext = null;

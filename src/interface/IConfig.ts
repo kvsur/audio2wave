@@ -1,7 +1,8 @@
 import { IAudio, IContainer, IStream } from './IElement';
+import { IPartial } from './base';
 
 export interface IDataConfig {
-    fftSize?: 128|256|512|1024;
+    fftSize: 128|256|512|1024;
 }
 
 export enum ALIGN {
@@ -16,16 +17,16 @@ export interface CanvasWH {
 }
 
 export interface IDrawerConfig {
-    color?: string;
-    barWidth?: number;
-    align?: ALIGN;
-    xSpace?: number;
-    canvasWH?: CanvasWH;
+    color: string;
+    barWidth: number;
+    align: ALIGN;
+    xSpace: number;
+    canvasWH: CanvasWH;
 }
 
 export interface IConfig {
     audio: IAudio | IStream;
     container: IContainer;
-    dataConfig?: IDataConfig;
-    drawerConfig?: IDrawerConfig;
+    dataConfig?: IPartial<IDataConfig>;
+    drawerConfig?: IPartial<IDrawerConfig>;
 }

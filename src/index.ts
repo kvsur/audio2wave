@@ -21,26 +21,24 @@ export class Audio2Wave implements IBase {
         });
     }
     
-    start(): void {
+    start(): Promise<any> {
         this.drawer.beforeDraw = () => {
             this.processer.getByteFrequenceData();
             this.drawer.waveData = this.processer.byteFrequencyData.slice(0);
         }
 
-        this.processer.start();
-        this.drawer.start();
+        return this.processer.start().then(_ => this.drawer.start());
     }
 
-    stop(): void {
-        this.drawer.stop();
-        this.processer.stop();
+    stop(): Promise<any> {
+        return this.drawer.stop().then(_ => this.processer.stop());
     }
 
     private stateChagneHandler = (e: IEvent<AudioContextState>) => {
         if (e.data === 'running') {
-            this.start();
+            // this.start();s
         } else if (e.data === 'suspended') {
-            this.stop();
+            // this.stop();
         }
     };
 
@@ -52,7 +50,7 @@ export class Audio2Wave implements IBase {
         this.processer.removeEventListener('statechange', this.stateChagneHandler);
     }
     
-    destroy(): Promise<void> {
+    destroy(): Promise<any> {
         this.removeEventListener();
         this.drawer.destroy();
         this.processer.destroy();

@@ -1,5 +1,5 @@
 export interface IBase {
-    start(): void;
-    stop(): void;
-    destroy(): Promise<void>;
+    start(): Promise<any>;
+    stop(): Promise<any>;
+    destroy(): Promise<any>;
 }
