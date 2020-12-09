@@ -1,6 +1,6 @@
 {
   "name": "audio2wave",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "description": "draw wave in canvas from audio element source",
   "main": "lib/index.js",
   "scripts": {
