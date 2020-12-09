@@ -15,7 +15,7 @@ $ npm install audio2wave
 
 ## example
 ```javascript
-import { Audio2Wave } from '../lib/index.js';
+import { Audio2Wave } from 'audio2wave';
 
 const audio = document.getElementById('audio');
 
@@ -48,7 +48,7 @@ window.onunload = () => {
 Or
 
 ```javascript
-import { Audio2Wave } from '../lib/index.js';
+import { Audio2Wave } from 'audio2wave';
 
 const audio = new MediaStrem();
 
@@ -95,33 +95,56 @@ export declare class Audio2Wave implements IBase {
 }
 ```
 
+#### bast.ts
+```ts
+type IPartial<T> = {
+    [P in keyof T]?: T[P]
+}
+
+type IReadOnly<T> = {
+    readonly [P in keyof T]: T[P]
+}
+
+type IRequired<T> = {
+    [P in keyof T]-?: T[P]
+}
+
+type IPick<T, K extends keyof T> = {
+    [P in K]: T[P]
+}
+```
+
 #### IConfig
 
 ```ts
 export interface IDataConfig {
-    fftSize?: 128 | 256 | 512 | 1024;
+    fftSize: 128|256|512|1024;
 }
-export declare enum ALIGN {
-    LEFT = 0,
-    CENTER = 1,
-    RIGHT = 2
+
+export enum ALIGN {
+    LEFT,
+    CENTER,
+    RIGHT,
 }
+
 export interface CanvasWH {
     width: number;
     height: number;
 }
+
 export interface IDrawerConfig {
-    color?: string;
-    barWidth?: number;
-    align?: ALIGN;
-    xSpace?: number;
-    canvasWH?: CanvasWH;
+    color: string;
+    barWidth: number;
+    align: ALIGN;
+    xSpace: number;
+    canvasWH: CanvasWH;
 }
+
 export interface IConfig {
     audio: IAudio | IStream;
     container: IContainer;
-    dataConfig?: IDataConfig;
-    drawerConfig?: IDrawerConfig;
+    dataConfig?: IPartial<IDataConfig>;
+    drawerConfig?: IPartial<IDrawerConfig>;
 }
 ```
 
