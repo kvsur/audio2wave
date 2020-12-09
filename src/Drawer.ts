@@ -53,7 +53,7 @@ export class Drawer implements IDrawer {
         this.context = this.canvas.getContext('2d');
         this.setCanvasSize();
         this.container.appendChild(this.canvas);
-        // 将canvas画布原点移动到整个画布y轴中间
+        // translate x,y origin to canvas y alias middle(keep x old)
         this.context.translate(0, this.height / 2);
         this.proxySetSize = () => {
             this.setCanvasSize();
@@ -74,7 +74,7 @@ export class Drawer implements IDrawer {
         }
         this.heightScale = (this.height / 2) / ((this.fftSize / 2) - 1);
 
-        // 将canvas画布原点移动到整个画布y轴中间
+        // translate x,y origin to canvas y alias middle(keep x old)
     }
 
     start(): Promise<any> {
