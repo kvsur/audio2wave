@@ -53,8 +53,6 @@ export class Drawer implements IDrawer {
         this.context = this.canvas.getContext('2d');
         this.setCanvasSize();
         this.container.appendChild(this.canvas);
-        // translate x,y origin to canvas y alias middle(keep x old)
-        this.context.translate(0, this.height / 2);
         this.proxySetSize = () => {
             this.setCanvasSize();
         };
@@ -62,19 +60,19 @@ export class Drawer implements IDrawer {
     }
 
     private setCanvasSize():void {
-        // this.context.translate(0, this.height / 2);
         if (this.config.canvasWH) {
             this.height = this.canvas.height = this.config.canvasWH.height;
             this.width = this.canvas.width = this.config.canvasWH.width;
         } else {
             const styleInfo = getComputedStyle(this.container);
-
+            
             this.height = this.canvas.height = parseFloat(styleInfo.height);
             this.width = this.canvas.width = parseFloat(styleInfo.width);
         }
         this.heightScale = (this.height / 2) / ((this.fftSize / 2) - 1);
-
+        
         // translate x,y origin to canvas y alias middle(keep x old)
+        this.context.translate(0, this.height / 2);
     }
 
     start(): Promise<any> {
